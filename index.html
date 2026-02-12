@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anne's Voice - Final</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const AnneVoiceGame = () => {
+          const [scene, setScene] = useState('title');
+          const [fade, setFade] = useState(true);
+
+          // 1. タイトル画面
+          const TitleScreen = () => (
+            <div className="relative h-screen w-full bg-black flex flex-col items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 opacity-40">
+                <img src="hans.png" className="w-full h-full object-cover filter grayscale" alt="Background" />
+              </div>
+              <h1 className="text-6xl font-serif text-white mb-8 tracking-widest z-10 animate-pulse">Anne's Voice</h1>
+              <button 
+                onClick={() => setScene('prologue')}
+                className="px-12 py-4 bg-transparent border-2 border-white text-white text-xl hover:bg-white hover:text-black transition-all duration-500 z-10"
+              >
+                運命を受け入れる
+              </button>
+            </div>
+          );
+
+          // 2. プロローグ
+          const Prologue = () => (
+            <div className="h-screen w-full bg-slate-900 flex items-center justify-center p-8">
+              <div className="max-w-2xl text-center space-y-6">
+                <p className="text-white text-2xl leading-relaxed animate-fade-in">
+                  1945年、雪の降るベルゲン・ベルゼン。
+                </p>
+                <p className="text-white text-2xl leading-relaxed delay-700">
+                  少女アンネは、冷たい鉄格子の向こうを見つめていた。
+                </p>
+                <button 
+                  onClick={() => setScene('battle')}
+                  className="mt-12 text-blue-400 hover:text-blue-300 underline underline-offset-8"
+                >
+                  物語の深淵へ
+                </button>
+              </div>
+            </div>
+          );
+
+          // 3. バトル画面
+          const Battle = () => {
+            const [hp, setHp] = useState(100);
+            const [message, setMessage] = useState('「お前の言葉など、誰にも届かない。」ハンスが嘲笑う。');
+
+            const attack = (type) => {
+              if (type === 'hope') {
+                setHp(h => Math.max(0, h - 20));
+                setMessage('アンネ：「私は、今でも人間は信じているわ！」');
+              } else {
+                setHp(h => Math.max(0, h - 10));
+                setMessage('アンネは日記を強く抱きしめた。');
+              }
+            };
+
+            useEffect(() => {
+              if (hp <= 0) setTimeout(() => setScene('ending'), 1000);
+            }, [hp]);
+
+            return (
+              <div className="h-screen w-full bg-gray-900 flex flex-col">
+                <div className="flex-1 flex justify-around items-center p-4">
+                  <div className="text-center">
+                    <img src="anne.png" className="w-48 h-64 object-cover border-4 border-blue-500 rounded-lg shadow-2xl" alt="Anne" />
+                    <p className="text-blue-400 mt-2 font-bold text-xl">アンネ</p>
+                  </div>
+                  <div className="relative text-center">
+                    <img src="hans.png" className="w-64 h-80 object-cover border-4 border-red-600 rounded-lg shadow-2xl brightness-75" alt="Hans" />
+                    <div className="absolute -top-10 left-0 w-full h-4 bg-gray-700 rounded-full overflow-hidden">
+                      <div className="h-full bg-red-600 transition-all duration-500" style={{ width: `${hp}%` }}></div>
+                    </div>
+                    <p className="text-red-500 mt-2 font-bold text-xl">ハンス少尉 (HP: {hp})</p>
+                  </div>
+                </div>
+                <div className="h-1/3 bg-black border-t-4 border-gray-800 p-6">
+                  <p className="text-white text-xl mb-6 h-12">{message}</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button onClick={() => attack('hope')} className="py-4 bg-blue-900 text-white rounded hover:bg-blue-700 border border-blue-400 transition-colors">希望を叫ぶ</button>
+                    <button onClick={() => attack('diary')} className="py-4 bg-gray-800 text-white rounded hover:bg-gray-700 border border-gray-500 transition-colors">日記を綴る</button>
+                  </div>
+                </div>
+              </div>
+            );
+          };
+
+          // 4. エンディング
+          const Ending = () => (
+            <div className="h-screen w-full bg-white flex flex-col items-center justify-center p-8 text-center">
+              <h2 className="text-4xl font-serif text-black mb-6">光の中に消える声</h2>
+              <p className="text-lg text-gray-700 max-w-lg mb-12">
+                ハンスは消え去った。アンネの言葉は時を超え、今も誰かの心の中で生き続けている。
+              </p>
+              <button 
+                onClick={() => setScene('title')}
+                className="text-gray-500 hover:text-black transition-colors"
+              >
+                最初に戻る
+              </button>
+            </div>
+          );
+
+          return (
+            <div className="font-sans antialiased">
+              {scene === 'title' && <TitleScreen />}
+              {scene === 'prologue' && <Prologue />}
+              {scene === 'battle' && <Battle />}
+              {scene === 'ending' && <Ending />}
+            </div>
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<AnneVoiceGame />);
+    </script>
+</body>
+</html>
+V
